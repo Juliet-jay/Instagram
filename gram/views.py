@@ -21,3 +21,7 @@ def index(request):
     next = request.GET.get('next')
     if next: return redirect(next)
     return render(request, 'account.html',  {"all_images": all_images}, {"all_users":all_users})
+
+def explore(request):
+    return render(request, 'user_list.html')
+
