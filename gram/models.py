@@ -13,15 +13,38 @@ class Profile(models.Model):
     bio = models.CharField(max_length=350,default=True) 
     profile_pic = models.ImageField(upload_to='ProfilePicture/',default=True)
     profile_avatar = models.ImageField(upload_to='AvatorPicture/',default=True)
-    date = models.DateTimeField(auto_now_add=True, null= True)  
+    date = models.DateTimeField(auto_now_add=True, null= True)
+    website = models.CharField(max_length=30, blank =True)
+    phone_number = models.IntegerField(blank =True, null = True)
+    location = models.CharField(max_length = 30, blank =True)
+    birth_date = models.DateField(null =True, blank = True)
+    followers = models.ManyToManyField('Profile', related_name = 'followers_profile', blank =True)
+    following = models.ManyToManyField('Profile', related_name='following_profile', blank =True)  
     
-    def __str__(self):
-            return self.profile.user
-    def save_profile(self):
-        self.save()
+   @receiver(post_save,sender = User)
+  def create_user_profile(sender,instance,created, **kwargs):
+    if created:
+      Profile.objects.create(user=instance)
 
-    def delete_profile(self,cls):
-        cls.objects.get(id = self.id).delete()
+  @receiver(post_save,sender = User)
+  def save_user_profile(sender,instance,**kwargs):
+    instance.profile.save()
+
+  def get_number_of_followers(self):
+    if self.followers.count():
+      return self.followers.count()
+    else:
+      return 0
+
+  def get_number_of_following(self):
+    if self.following.count():
+      return self.following.count()
+    else:
+      return 0
+  def __str__(self):
+    return self.user.username
+
+
     
 class Image(models.Model):
     image = models.ImageField(upload_to ='pictsagram/',default='Tony')
@@ -55,4 +78,14 @@ class Comments (models.Model):
 
     def delete_comment(self,cls):
         cls.objects.get(id = self.id).delete()
+        
+class Like(models.Model):
+      post = models.ForeignKey('Post')
+  user = models.ForeignKey(User)
+
+  class Meta:
+    unique_together = ("post", "user")
+
+  def __str__(self):
+    return 'Like:' + self.user.username + ' ' + self.post.title
         
