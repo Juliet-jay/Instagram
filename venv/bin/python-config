@@ -1,4 +1,4 @@
-#!/home/kathure/Desktop/personal-gallery/venv/bin/python
+#!/home/kathure/Documents/Instagram/venv/bin/python
 
 import sys
 import getopt

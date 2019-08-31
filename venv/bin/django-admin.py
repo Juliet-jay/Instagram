@@ -1,4 +1,4 @@
-#!/home/kathure/Desktop/personal-gallery/venv/bin/python2
+#!/home/kathure/Documents/Instagram/venv/bin/python2
 from django.core import management
 
 if __name__ == "__main__":
