@@ -14,3 +14,10 @@ from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
+@login_required(login_url='/accounts/login/')
+def index(request):
+    all_images = Image.objects.all()
+    all_users = Profile.objects.all()
+    next = request.GET.get('next')
+    if next: return redirect(next)
+    return render(request, 'account.html',  {"all_images": all_images}, {"all_users":all_users})
