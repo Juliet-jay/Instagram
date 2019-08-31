@@ -8,7 +8,6 @@ from django.conf.urls.static import static
 from .models import Profile, Image
 from django.contrib.auth.models import User
 from . import models
-# from annoying.decorators import ajax_request
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 
@@ -50,4 +49,77 @@ def upload(request):
     else:
         form =PostForm
     return render(request, 'post_pic.html', {"form": form})
+
+@login_required
+def update_profile(request, username):
+  user = User.objects.get(username = username)
+  if request.method == 'POST':
+    user_form = UserForm(request.POST, instance = request.user)
+    profile_form = ProfileForm(request.POST, instance = request.user.profile,files =request.FILES)
+    if user_form.is_valid() and profile_form.is_valid():
+      user_form.save()
+      profile_form.save()
+      messages.success(request, ('Your profile was successfully updated!'))
+      return redirect(reverse('profile', kwargs={'username': request.user.username}))
+    else:
+      messages.error(request, ('Please correct the error below.'))
+  else:
+    user_form = UserForm(instance = request.user)
+    profile_form = ProfileForm(instance = request.user.profile)
+  return render(request, 'profiles/profile_form.html', {"user_form": user_form,"profile_form": profile_form})
+
+@login_required
+def profile(request, username):
+  user = User.objects.get(username = username)
+  if not user:
+    return redirect('Home')
+  profile = Profile.objects.get(user =user)
+
+
+  title = f"{user.username}"
+  return render(request, 'profiles/profile.html', {"title": title, "user":user, "profile":profile})
+
+def followers(request, username):
+  user = user = User.objects.get(username = username)
+  user_profile = Profile.objects.get(user=user)
+  profiles = user_profile.followers.all
+
+  title = "Followers"
+
+  return render(request, 'follow_list.html', {"title": title, "profiles":profiles})
+
+def following(request, username):
+  user = user = User.objects.get(username = username)
+  user_profile = Profile.objects.get(user=user)
+  profiles = user_profile.following.all()
+
+  title = "Following"
+
+  return render(request, 'follow_list.html', {"title": title, "profiles":profiles})
+
+def likes(request, pk):
+  post = Post.objects.get(pk=pk)
+  profiles = Like.objects.filter(post=post)
+
+  title = 'Likes'
+  return render(request, 'follow_list.html', {"title": title, "profiles":profiles})
+
+def search(request):        
+    if request.method == 'POST':      
+        profile =  request.POST.getprofile('search')      
+        try:
+            status = Add_prod.objects.filter(profile__icontains=profile)
+            #Add_prod class contains a column
+        except Add_prod.DoesNotExist:
+            status = None
+        return render(request,"search.html",{"books":status})
+    else:
+        return render(request,"search.html",{})    
+
+
+
+
+
+
+
 
