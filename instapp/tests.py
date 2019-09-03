@@ -46,4 +46,3 @@ class ProfileTestClas(TestCase):
         self.assertTrue(len(profiles)==0)
 
 
-# Create your tests here.
