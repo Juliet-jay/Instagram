@@ -21,7 +21,7 @@ def home(request):
 
 @login_required(login_url='/accounts/login/')
 def profile(request):
-    title = 'InstaKid'
+    title = 'Instalove'
     current_user = request.user
     profile = Profile.get_profile()
     image = Image.get_images()
@@ -35,7 +35,7 @@ def profile(request):
 
 @login_required(login_url='/accounts/login/')
 def settings(request):
-    title = 'InstaKid'
+    title = 'Instalove'
     settings = Profile.get_profile()
     return render(request,'profile/settings.html',{"settings":settings,
                                                     "title":title,})
